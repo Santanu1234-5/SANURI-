@@ -1,0 +1,8 @@
+{
+  "name": "SANURI",
+  "description": "Professional web experiences by Santanu Maiti.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
