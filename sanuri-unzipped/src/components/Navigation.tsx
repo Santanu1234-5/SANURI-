@@ -48,12 +48,17 @@ export function Navbar() {
             </button>
           ))}
         </div>
-        <button 
-          onClick={() => handleNavClick('cta')}
-          className="hidden md:block bg-white text-black px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors"
-        >
-          Get Started
-        </button>
+        <div className="hidden md:flex items-center gap-4">
+          <a href="/login.html" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
+            Sign In
+          </a>
+          <button 
+            onClick={() => handleNavClick('cta')}
+            className="bg-white text-black px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors"
+          >
+            Get Started
+          </button>
+        </div>
 
         {/* Mobile Toggle */}
         <button 
@@ -83,6 +88,12 @@ export function Navbar() {
                   {link.label}
                 </button>
               ))}
+              <a 
+                href="/login.html"
+                className="text-left text-blue-400 hover:text-blue-300 text-lg py-2 border-b border-slate-800/50 font-medium block"
+              >
+                Sign In
+              </a>
               <button 
                 onClick={() => handleNavClick('cta')}
                 className="bg-white text-black px-5 py-3 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors mt-2 text-center"
