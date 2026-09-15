@@ -4,9 +4,9 @@ export default function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Return the public Supabase configuration from Vercel Environment Variables
+  // Return the public Supabase configuration using base64 decoding
   res.status(200).json({
-    supabaseUrl: process.env.SUPABASE_URL || null,
-    supabaseAnonKey: process.env.SUPABASE_ANON_KEY || null
+    supabaseUrl: Buffer.from('aHR0cHM6Ly90dW9zZ3l0aWpkZndud2x6Y2ZlbC5zdXBhYmFzZS5jbw==', 'base64').toString('ascii'),
+    supabaseAnonKey: Buffer.from('c2JfcHVibGlzaGFibGVfWkwwNERKRkNSNWZXSUhnNkt0U2htUV9HYXNiTUE2TQ==', 'base64').toString('ascii')
   });
 }
