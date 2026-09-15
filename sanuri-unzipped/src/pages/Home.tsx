@@ -1,9 +1,6 @@
 import { Navbar, Footer } from '../components/Navigation';
 import { Hero, About } from '../components/HeroAbout';
-import { Services, Projects } from '../components/ServicesProjects';
-import { Interactive, Stats } from '../components/InteractiveStats';
-import { Testimonials, Blog } from '../components/TestimonialsBlog';
-import { CTA, Contact } from '../components/ContactCTA';
+import { Contact } from '../components/ContactCTA';
 import { ScrollAnimation } from '../components/ScrollAnimation';
 
 export default function Home() {
@@ -15,13 +12,6 @@ export default function Home() {
         <main>
           <Hero />
           <About />
-          <Services />
-          <Projects />
-          <Interactive />
-          <Stats />
-          <Testimonials />
-          <Blog />
-          <CTA />
           <Contact />
         </main>
         <Footer />

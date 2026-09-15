@@ -1,6 +1,7 @@
 import { Hexagon, Instagram, Github, Linkedin, Youtube, ArrowUp, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Link } from 'react-router-dom';
 
 export const scrollTo = (id: string) => {
   const element = document.getElementById(id);
@@ -20,9 +21,8 @@ export function Navbar() {
   const navLinks = [
     { label: 'Home', id: 'hero' },
     { label: 'About', id: 'about' },
-    { label: 'Projects', id: 'projects' },
-    { label: 'Services', id: 'services' },
     { label: 'Contact', id: 'contact' },
+    { label: 'Nexus AI', id: 'nexus-link', to: '/nexus-ai' },
   ];
 
   return (
@@ -39,19 +39,29 @@ export function Navbar() {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8 text-sm text-slate-300">
           {navLinks.map((link) => (
-            <button 
-              key={link.label}
-              onClick={() => handleNavClick(link.id)}
-              className="hover:text-white transition-colors"
-            >
-              {link.label}
-            </button>
+            link.to ? (
+              <Link 
+                key={link.label}
+                to={link.to}
+                className="hover:text-white transition-colors text-blue-400 font-medium"
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <button 
+                key={link.label}
+                onClick={() => handleNavClick(link.id)}
+                className="hover:text-white transition-colors"
+              >
+                {link.label}
+              </button>
+            )
           ))}
         </div>
         <div className="hidden md:flex items-center gap-4">
-          <a href="/login.html" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
+          <Link to="/login" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
             Sign In
-          </a>
+          </Link>
           <button 
             onClick={() => handleNavClick('cta')}
             className="bg-white text-black px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors"
@@ -80,20 +90,31 @@ export function Navbar() {
           >
             <div className="flex flex-col px-6 py-4 gap-4">
               {navLinks.map((link) => (
-                <button 
-                  key={link.label}
-                  onClick={() => handleNavClick(link.id)}
-                  className="text-left text-slate-300 hover:text-white text-lg py-2 border-b border-slate-800/50"
-                >
-                  {link.label}
-                </button>
+                link.to ? (
+                  <Link 
+                    key={link.label}
+                    to={link.to}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-left text-blue-400 hover:text-blue-300 text-lg py-2 border-b border-slate-800/50 font-medium"
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <button 
+                    key={link.label}
+                    onClick={() => handleNavClick(link.id)}
+                    className="text-left text-slate-300 hover:text-white text-lg py-2 border-b border-slate-800/50"
+                  >
+                    {link.label}
+                  </button>
+                )
               ))}
-              <a 
-                href="/login.html"
-                className="text-left text-blue-400 hover:text-blue-300 text-lg py-2 border-b border-slate-800/50 font-medium block"
+              <Link 
+                to="/login"
+                className="text-left text-slate-300 hover:text-white text-lg py-2 border-b border-slate-800/50 block"
               >
                 Sign In
-              </a>
+              </Link>
               <button 
                 onClick={() => handleNavClick('cta')}
                 className="bg-white text-black px-5 py-3 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors mt-2 text-center"
@@ -142,8 +163,6 @@ export function Footer() {
             <div className="flex flex-col gap-3 text-slate-400 text-sm">
               <button onClick={() => scrollTo('hero')} className="text-left hover:text-blue-400 transition-colors">Home</button>
               <button onClick={() => scrollTo('about')} className="text-left hover:text-blue-400 transition-colors">About</button>
-              <button onClick={() => scrollTo('projects')} className="text-left hover:text-blue-400 transition-colors">Projects</button>
-              <button onClick={() => scrollTo('services')} className="text-left hover:text-blue-400 transition-colors">Services</button>
               <button onClick={() => scrollTo('contact')} className="text-left hover:text-blue-400 transition-colors">Contact</button>
             </div>
           </div>

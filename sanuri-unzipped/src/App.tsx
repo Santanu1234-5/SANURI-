@@ -1,36 +1,62 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
-import DashboardLayout from './layouts/DashboardLayout';
-import Overview from './pages/dashboard/Overview';
-import ProblemInput from './pages/nexus/ProblemInput';
-import ProblemAnalysis from './pages/nexus/ProblemAnalysis';
-import RecommendedSolutions from './pages/nexus/RecommendedSolutions';
-import VisualRoadmap from './pages/nexus/VisualRoadmap';
+import { useState } from 'react';
+import { HomeView } from './views/HomeView';
+import { AuthView } from './views/AuthView';
+import { DashboardView } from './views/DashboardView';
+import { NexusAIView } from './views/NexusAIView';
+import { ProfileView } from './views/ProfileView';
+import { AIAssistant } from './components/AIAssistant';
+import { ScrollAnimation } from './components/ScrollAnimation';
+
+export type AppView = 'home' | 'login' | 'register' | 'forgot-password' | 'reset-password' | 'dashboard' | 'nexus-input' | 'nexus-analysis' | 'nexus-solutions' | 'nexus-roadmap' | 'profile';
+
+export interface UserProfile {
+  fullName: string;
+  email: string;
+}
 
 export default function App() {
+  const [currentView, setCurrentView] = useState<AppView>('home');
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  const handleLogin = (userData: UserProfile) => {
+    setUser(userData);
+    setCurrentView('dashboard');
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentView('home');
+  };
+
+  const renderView = () => {
+    const requiresAuth = ['dashboard', 'nexus-input', 'nexus-analysis', 'nexus-solutions', 'nexus-roadmap', 'profile'];
+    const actualView = (requiresAuth.includes(currentView) && !user) ? 'login' : currentView;
+
+    switch(actualView) {
+      case 'home': return <HomeView onNavigate={setCurrentView} />;
+      case 'login':
+      case 'register':
+      case 'forgot-password':
+      case 'reset-password':
+        return <AuthView view={actualView} onNavigate={setCurrentView} onLogin={handleLogin} />;
+      case 'dashboard': return <DashboardView onNavigate={setCurrentView} user={user!} onLogout={handleLogout} />;
+      case 'nexus-input':
+      case 'nexus-analysis':
+      case 'nexus-solutions':
+      case 'nexus-roadmap':
+        return <NexusAIView view={actualView} onNavigate={setCurrentView} onLogout={handleLogout} />;
+      case 'profile': return <ProfileView onNavigate={setCurrentView} user={user!} onLogout={handleLogout} />;
+      default: return <HomeView onNavigate={setCurrentView} />;
+    }
+  }
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<Overview />} />
-          <Route path="solutions" element={<div className="text-white p-8">My Solutions (Coming Soon)</div>} />
-          <Route path="profile" element={<div className="text-white p-8">Profile (Coming Soon)</div>} />
-          <Route path="settings" element={<div className="text-white p-8">Settings (Coming Soon)</div>} />
-        </Route>
-        
-        {/* Nexus AI Flow (inside DashboardLayout for sidebar navigation) */}
-        <Route path="/nexus-ai" element={<DashboardLayout />}>
-          <Route index element={<ProblemInput />} />
-          <Route path="analysis" element={<ProblemAnalysis />} />
-          <Route path="solutions" element={<RecommendedSolutions />} />
-          <Route path="roadmap" element={<VisualRoadmap />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <div className="min-h-screen bg-transparent text-white font-sans overflow-x-hidden selection:bg-indigo-500/30 relative">
+      <ScrollAnimation />
+      <div className="relative z-10 bg-[#05050A]/70 min-h-screen">
+        {renderView()}
+        <AIAssistant />
+      </div>
+    </div>
   );
 }

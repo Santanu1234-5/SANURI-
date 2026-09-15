@@ -7,7 +7,8 @@ import {
   Settings, 
   LogOut,
   Search,
-  Bell
+  Bell,
+  Compass
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -16,6 +17,7 @@ export default function DashboardLayout() {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Discover', href: '/dashboard/discover', icon: Compass },
     { name: 'Nexus AI', href: '/nexus-ai', icon: Sparkles },
     { name: 'My Solutions', href: '/dashboard/solutions', icon: FolderOpen },
     { name: 'Profile', href: '/dashboard/profile', icon: User },
