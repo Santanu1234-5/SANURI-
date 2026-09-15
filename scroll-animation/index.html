@@ -3,41 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scroll Animation</title>
+    <title>SANURI - Scroll Animation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 500vh; /* Adjust for scroll length */
-            background-color: #000;
-        }
-
+        body { margin: 0; padding: 0; background-color: #000; overflow-x: hidden; height: 500vh; }
         #animation-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            background-color: #000;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; background-color: #000; z-index: 0;
         }
-
-        canvas {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        canvas { width: 100%; height: 100%; object-fit: cover; }
+        .mask-radial-gradient { -webkit-mask-image: radial-gradient(circle, black 40%, transparent 70%); }
+        
+        /* Utility classes for animation overrides */
+        .fade-in { opacity: 0; transition: opacity 0.6s ease-out, transform 0.6s ease-out; transform: translateY(20px); }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        
+        .modal { display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-bg { position: absolute; inset: 0; background: rgba(3, 7, 18, 0.8); backdrop-filter: blur(8px); }
+        .modal-content { position: relative; z-index: 10; background: #0b1120; border: 1px solid #1e293b; border-radius: 1rem; padding: 2rem; max-width: 3xl; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; color: #94a3b8; cursor: pointer; }
+        .modal-close:hover { color: #fff; }
     </style>
 </head>
-<body>
+<body class="bg-transparent text-slate-300 font-sans selection:bg-blue-500/30 selection:text-white relative">
     <div id="animation-container">
         <canvas id="hero-lightpass"></canvas>
     </div>
 
+    <div class="relative z-10 bg-[#030712]/70 min-h-screen">
+        
+        <!-- Navigation -->
+        <nav class="fixed top-0 left-0 right-0 z-50 bg-[#030712]/80 backdrop-blur-md border-b border-slate-800">
+            <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                <div onclick="scrollToId('hero')" class="flex items-center gap-2 text-white font-bold text-xl tracking-tight cursor-pointer">
+                    <i data-lucide="hexagon" class="text-blue-500 fill-blue-500/20" width="24" height="24"></i>
+                    SANURI
+                </div>
+                
+                <div class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+                    <button onclick="scrollToId('hero')" class="hover:text-white transition-colors">Home</button>
+                    <button onclick="scrollToId('about')" class="hover:text-white transition-colors">About</button>
+                    <button onclick="scrollToId('projects')" class="hover:text-white transition-colors">Projects</button>
+                    <button onclick="scrollToId('services')" class="hover:text-white transition-colors">Services</button>
+                    <button onclick="scrollToId('contact')" class="hover:text-white transition-colors">Contact</button>
+                </div>
+                
+                <button onclick="scrollToId('cta')" class="hidden md:block bg-white text-black px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors">
+                    Get Started
+                </button>
+
+                <button class="md:hidden text-slate-300 hover:text-white" onclick="toggleMobileMenu()">
+                    <i data-lucide="menu" id="menu-icon" width="24" height="24"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Nav -->
+            <div id="mobile-menu" class="hidden md:hidden border-t border-slate-800 bg-[#030712]">
+                <div class="flex flex-col px-6 py-4 gap-4">
+                    <button onclick="scrollToId('hero'); toggleMobileMenu()" class="text-left text-slate-300 hover:text-white text-lg py-2 border-b border-slate-800/50">Home</button>
+                    <button onclick="scrollToId('about'); toggleMobileMenu()" class="text-left text-slate-300 hover:text-white text-lg py-2 border-b border-slate-800/50">About</button>
+                    <button onclick="scrollToId('projects'); toggleMobileMenu()" class="text-left text-slate-300 hover:text-white text-lg py-2 border-b border-slate-800/50">Projects</button>
+                    <button onclick="scrollToId('services'); toggleMobileMenu()" class="text-left text-slate-300 hover:text-white text-lg py-2 border-b border-slate-800/50">Services</button>
+                    <button onclick="scrollToId('contact'); toggleMobileMenu()" class="text-left text-slate-300 hover:text-white text-lg py-2 border-b border-slate-800/50">Contact</button>
+                    <button onclick="scrollToId('cta'); toggleMobileMenu()" class="bg-white text-black px-5 py-3 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors mt-2 text-center">Get Started</button>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+            <!-- Hero -->
+            <section id="hero" class="pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col justify-center min-h-[100vh] relative overflow-hidden">
+                <div class="max-w-3xl z-10 relative fade-in">
+                    <h1 class="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white leading-[1.1] mb-6 tracking-tight">
+                        <span class="bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">Ideas</span> Today.<br />
+                        Digital <span class="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">Tomorrow.</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-slate-400 mb-10 max-w-xl leading-relaxed">
+                        We build modern, interactive web experiences that turn your ideas into reality. Explore our work and see how creativity meets technology.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-4">
+                        <button onclick="scrollToId('projects')" class="bg-blue-600 hover:bg-blue-700 hover:scale-105 hover:-translate-y-1 text-white px-8 py-3.5 rounded-full font-medium transition-all duration-300 shadow-lg shadow-blue-500/20">
+                            Explore Now
+                        </button>
+                        <button onclick="openModal('video-modal')" class="group flex items-center gap-2 text-white px-6 py-3.5 rounded-full font-medium hover:bg-white/5 transition-colors border border-transparent hover:border-slate-700">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full border border-slate-500 group-hover:bg-white group-hover:border-white transition-colors">
+                                <i data-lucide="play" class="ml-0.5 fill-white group-hover:fill-black transition-colors" width="14" height="14"></i>
+                            </span>
+                            Watch Video
+                        </button>
+                    </div>
+                </div>
+
+                <div class="absolute right-[-10%] md:right-0 lg:right-[5%] top-[20%] md:top-[15%] w-[500px] h-[500px] md:w-[800px] md:h-[800px] pointer-events-none -z-10 rounded-full overflow-hidden opacity-50 mix-blend-screen mask-radial-gradient">
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80" alt="Cinematic abstract digital space" class="w-full h-full object-cover animate-pulse" />
+                </div>
+
+                <button onclick="scrollToId('about')" class="absolute bottom-10 right-6 flex items-center gap-2 text-slate-500 hover:text-slate-300 text-sm font-medium animate-pulse cursor-pointer transition-colors fade-in">
+                    <i data-lucide="arrow-down" width="16" height="16"></i> Scroll Down
+                </button>
+            </section>
+
+            <!-- About -->
+            <section id="about" class="py-24 px-6 max-w-7xl mx-auto border-t border-slate-800/50">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div class="fade-in">
+                        <div class="text-blue-500 font-mono text-sm mb-3">02</div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">About Us</h2>
+                        <p class="text-slate-400 text-lg mb-10 leading-relaxed max-w-md">
+                            We are a team of passionate developers, designers and creators who love building web experiences that inspire, engage and make an impact. Under the SANURI brand, we strive for perfection in every pixel.
+                        </p>
+                        <div class="grid grid-cols-3 gap-6 mb-10">
+                            <div>
+                                <div class="text-3xl md:text-4xl font-bold text-white mb-1">2+</div>
+                                <div class="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">Years Experience</div>
+                            </div>
+                            <div>
+                                <div class="text-3xl md:text-4xl font-bold text-white mb-1">50+</div>
+                                <div class="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">Projects Completed</div>
+                            </div>
+                            <div>
+                                <div class="text-3xl md:text-4xl font-bold text-white mb-1">100%</div>
+                                <div class="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">Client Satisfaction</div>
+                            </div>
+                        </div>
+                        <button onclick="openModal('about-modal')" class="border border-slate-700 text-white hover:bg-white/5 hover:-translate-y-0.5 px-6 py-2.5 rounded-full text-sm font-medium transition-all">
+                            Learn More
+                        </button>
+                    </div>
+                    
+                    <div class="relative fade-in">
+                        <div class="aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden border border-slate-800 bg-[#0b1120] relative group">
+                             <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80" alt="Creative Developer Workspace" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+                             <div class="absolute inset-0 bg-gradient-to-tr from-[#030712]/80 via-transparent to-blue-900/20 mix-blend-overlay pointer-events-none"></div>
+                        </div>
+                        <div class="absolute -right-4 md:-right-8 top-1/4 bg-[#0b1120]/80 backdrop-blur-md border border-slate-700 p-6 rounded-2xl hidden md:block rotate-3 shadow-2xl">
+                             <p class="font-serif italic text-3xl text-white leading-tight">Build<br/><span class="text-blue-400">Create</span><br/>Innovate</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Services -->
+            <section id="services" class="py-24 px-6 max-w-7xl mx-auto border-t border-slate-800/50">
+                <div class="fade-in">
+                    <div class="text-blue-500 font-mono text-sm mb-3">03</div>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Our Services</h2>
+                    <p class="text-slate-400 mb-12">We turn your ideas into powerful digital solutions.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in" id="services-grid">
+                    <!-- Javascript will populate this -->
+                </div>
+            </section>
+
+            <!-- Projects -->
+            <section id="projects" class="py-24 px-6 max-w-7xl mx-auto border-t border-slate-800/50">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 fade-in">
+                    <div>
+                        <div class="text-blue-500 font-mono text-sm mb-3">04</div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Our Latest Work</h2>
+                        <p class="text-slate-400">A glimpse of what we've built. Each project tells a story.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2" id="project-categories">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 fade-in" id="projects-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <section id="cta" class="py-32 px-6 max-w-7xl mx-auto text-center border-t border-slate-800/50 relative overflow-hidden">
+                <div class="absolute inset-0 z-0">
+                    <img src="https://images.unsplash.com/photo-1506443432602-ac2fcd6f54e0?auto=format&fit=crop&q=80" alt="Futuristic Landscape" class="w-full h-full object-cover opacity-20 mix-blend-screen" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#030712] via-[#030712]/80 to-transparent"></div>
+                </div>
+
+                <div class="relative z-10 fade-in">
+                    <div class="inline-block bg-blue-900/20 border border-blue-500/30 px-5 py-2 rounded-full text-blue-400 text-sm font-medium mb-8">
+                        Ready to start your next project?
+                    </div>
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-10 max-w-4xl mx-auto leading-tight tracking-tight">
+                        Let's Build <span class="bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">Something</span><br />
+                        Amazing Together.
+                    </h2>
+                    <div class="flex flex-wrap items-center justify-center gap-4">
+                        <button onclick="scrollToId('contact')" class="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-medium transition-all hover:scale-105 flex items-center gap-2 shadow-lg shadow-blue-500/20">
+                            Get Started <i data-lucide="arrow-right" class="group-hover:translate-x-1 transition-transform" width="18" height="18"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact -->
+            <section id="contact" class="py-24 px-6 max-w-7xl mx-auto border-t border-slate-800/50">
+                <div class="fade-in">
+                    <div class="text-blue-500 font-mono text-sm mb-3">09</div>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Get In Touch</h2>
+                    <p class="text-slate-400 mb-16 max-w-md">
+                        Have a project in mind or just want to say hello?<br/>We'd love to hear from you.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 mb-16">
+                    <div class="space-y-10 fade-in">
+                        <a href="mailto:santanumaiti424@gmail.com" class="flex items-start gap-5 group cursor-pointer">
+                            <div class="w-14 h-14 bg-[#0b1120] border border-slate-800 rounded-xl flex items-center justify-center text-slate-300 group-hover:border-blue-500 group-hover:text-blue-400 transition-colors group-hover:scale-110 duration-300">
+                                <i data-lucide="mail" width="24" height="24"></i>
+                            </div>
+                            <div class="flex flex-col justify-center h-14">
+                                <div class="text-slate-400 text-sm mb-1">Email</div>
+                                <div class="text-white font-medium group-hover:text-blue-400 transition-colors">santanumaiti424@gmail.com</div>
+                            </div>
+                        </a>
+                        <div class="flex items-start gap-5">
+                            <div class="w-14 h-14 bg-[#0b1120] border border-slate-800 rounded-xl flex items-center justify-center text-slate-300">
+                                <i data-lucide="map-pin" width="24" height="24"></i>
+                            </div>
+                            <div class="flex flex-col justify-center h-14">
+                                <div class="text-slate-400 text-sm mb-1">Creator</div>
+                                <div class="text-white font-medium">Santanu Maiti</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0b1120] border border-slate-800 p-8 md:p-10 rounded-2xl relative overflow-hidden fade-in">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[50px] pointer-events-none"></div>
+                        <form id="contact-form" class="flex flex-col gap-5 relative z-10" onsubmit="handleFormSubmit(event)">
+                            <div>
+                                <input type="text" placeholder="Your Name" required class="w-full bg-[#030712] border border-slate-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors" />
+                            </div>
+                            <div>
+                                <input type="email" placeholder="Your Email" required class="w-full bg-[#030712] border border-slate-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors" />
+                            </div>
+                            <div>
+                                <textarea placeholder="Your Message" rows="4" required class="w-full bg-[#030712] border border-slate-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors resize-none"></textarea>
+                            </div>
+                            <button type="submit" class="group bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-xl font-medium transition-colors mt-2 flex items-center justify-center gap-2">
+                                Send Message 
+                                <i data-lucide="arrow-right" class="group-hover:translate-x-1 transition-transform" width="18" height="18"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="bg-[#0b1120] border-t border-slate-800 pt-16 pb-8 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                    <div class="md:col-span-2">
+                        <div onclick="scrollToId('hero')" class="flex items-center gap-2 text-white font-bold text-xl tracking-tight mb-4 cursor-pointer">
+                            <i data-lucide="hexagon" class="text-blue-500 fill-blue-500/20" width="24" height="24"></i>
+                            SANURI
+                        </div>
+                        <p class="text-slate-400 max-w-sm mb-6">
+                            Creating digital experiences that people remember. Built with passion and precision.
+                        </p>
+                        <div class="flex flex-col gap-1 mb-6 text-slate-300 text-sm">
+                            <span class="font-medium text-white">Santanu Maiti</span>
+                            <a href="mailto:santanumaiti424@gmail.com" class="hover:text-blue-400 transition-colors">santanumaiti424@gmail.com</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-slate-800 text-slate-500 text-sm">
+                    <p>© 2026 SANURI. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="video-modal" class="modal">
+        <div class="modal-bg" onclick="closeModal('video-modal')"></div>
+        <div class="modal-content" style="padding:0; max-width: 800px; width: 100%;">
+            <i data-lucide="x" class="modal-close" onclick="closeModal('video-modal')"></i>
+            <div class="aspect-video bg-black rounded-lg flex items-center justify-center border border-slate-800 relative overflow-hidden group">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80" alt="Video cover" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
+                <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+                <div class="text-center relative z-10">
+                    <button class="w-20 h-20 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center mx-auto mb-4 border border-white/20 transition-all hover:scale-110">
+                        <i data-lucide="play" class="ml-1 fill-white text-white" width="32" height="32"></i>
+                    </button>
+                    <p class="text-white font-medium text-lg">Watch Showreel</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="about-modal" class="modal">
+        <div class="modal-bg" onclick="closeModal('about-modal')"></div>
+        <div class="modal-content text-left">
+            <i data-lucide="x" class="modal-close" onclick="closeModal('about-modal')"></i>
+            <h3 class="text-2xl font-bold text-white mb-4">Our Vision & Mission</h3>
+            <div class="aspect-video rounded-xl overflow-hidden mb-6 relative">
+                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80" alt="Team" class="w-full h-full object-cover opacity-80" />
+            </div>
+            <div class="space-y-4 text-slate-300">
+                <p>At SANURI, led by Santanu Maiti, we believe that the web is a canvas for innovation. Our mission is to bridge the gap between complex functionality and beautiful design.</p>
+                <p>We specialize in creating robust, scalable, and visually stunning applications that help businesses grow and engage their audiences effectively.</p>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Scroll Animation Logic
         const canvas = document.getElementById("hero-lightpass");
         const context = canvas.getContext("2d");
 
@@ -82,6 +361,59 @@
             
             requestAnimationFrame(() => updateImage(frameIndex));
         });
+
+        // Services Data & Render
+        const services = [
+            { icon: "layout", title: "Web Development", desc: "Modern, responsive and high-performance websites built with the latest technologies." },
+            { icon: "palette", title: "UI/UX Design", desc: "Clean, creative and user-focused designs that bring your brand to life." },
+            { icon: "lightbulb", title: "Creative Solutions", desc: "From concept to launch, we bring your vision to reality with innovation." }
+        ];
+        
+        document.getElementById('services-grid').innerHTML = services.map(s => `
+            <div class="bg-[#0b1120] border border-slate-800 p-8 rounded-2xl hover:border-blue-500/50 hover:-translate-y-1 transition-all duration-300 group cursor-pointer shadow-lg hover:shadow-blue-900/20">
+                <div class="w-14 h-14 bg-blue-500/10 text-blue-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                    <i data-lucide="${s.icon}" width="24" height="24"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">${s.title}</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">${s.desc}</p>
+            </div>
+        `).join('');
+        lucide.createIcons(); // refresh for new icons
+
+        // Utility Functions
+        function scrollToId(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            alert("Message Sent! Thank you.");
+            e.target.reset();
+        }
+        
+        // Simple Intersection Observer for Fade-In
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
