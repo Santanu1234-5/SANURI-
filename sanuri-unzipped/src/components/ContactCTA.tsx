@@ -7,18 +7,18 @@ export function CTA() {
   return (
     <section id="cta" className="py-32 px-6 max-w-7xl mx-auto text-center border-t border-slate-800/50 relative overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <motion.img 
+        <motion.img
           initial={{ scale: 1 }}
           animate={{ scale: 1.05 }}
           transition={{ duration: 20, repeat: Infinity, repeatType: 'reverse', ease: "linear" }}
-          src="https://images.unsplash.com/photo-1506443432602-ac2fcd6f54e0?auto=format&fit=crop&q=80" 
-          alt="Futuristic Landscape" 
-          className="w-full h-full object-cover opacity-20 mix-blend-screen" 
+          src="https://images.unsplash.com/photo-1506443432602-ac2fcd6f54e0?auto=format&fit=crop&q=80"
+          alt="Futuristic Landscape"
+          className="w-full h-full object-cover opacity-20 mix-blend-screen"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#030712] via-[#030712]/80 to-transparent" />
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -33,13 +33,13 @@ export function CTA() {
           Amazing Together.
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <button 
+          <button
             onClick={() => scrollTo('contact')}
             className="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-medium transition-all hover:scale-105 flex items-center gap-2 shadow-lg shadow-blue-500/20"
           >
             Get Started <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </button>
-          <button 
+          <button
             onClick={() => scrollTo('projects')}
             className="bg-[#0b1120] border border-slate-700 text-white hover:bg-white/5 hover:border-slate-600 px-8 py-4 rounded-full font-medium transition-colors"
           >
@@ -64,7 +64,7 @@ export function Contact() {
       newErrors.name = 'Name is required';
       isValid = false;
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
       isValid = false;
@@ -121,14 +121,14 @@ export function Contact() {
         <div className="text-blue-500 font-mono text-sm mb-3">09</div>
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Get In Touch</h2>
         <p className="text-slate-400 mb-16 max-w-md">
-          Have a project in mind or just want to say hello?<br/>We'd love to hear from you.
+          Have a project in mind or just want to say hello?<br />We'd love to hear from you.
         </p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 mb-16">
-        <motion.div 
-          initial={{ opacity: 0, x: -30 }} 
-          whileInView={{ opacity: 1, x: 0 }} 
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="space-y-10"
@@ -153,16 +153,16 @@ export function Contact() {
           </div>
         </motion.div>
 
-        <motion.div 
-          initial={{ opacity: 0, x: 30 }} 
-          whileInView={{ opacity: 1, x: 0 }} 
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="bg-[#0b1120] border border-slate-800 p-8 md:p-10 rounded-2xl relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[50px] pointer-events-none" />
           {status === 'success' ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
               className="h-full flex flex-col items-center justify-center text-center space-y-4 py-12 relative z-10"
             >
@@ -171,7 +171,7 @@ export function Contact() {
               </div>
               <h3 className="text-2xl font-bold text-white">Message Sent!</h3>
               <p className="text-slate-400">Thank you for reaching out. We'll get back to you shortly.</p>
-              <button 
+              <button
                 onClick={() => setStatus('idle')}
                 className="mt-4 px-6 py-2 border border-slate-700 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
               >
@@ -181,44 +181,44 @@ export function Contact() {
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-5 relative z-10">
               <div>
-                <input 
-                  type="text" 
-                  placeholder="Your Name" 
+                <input
+                  type="text"
+                  placeholder="Your Name"
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className={`w-full bg-[#030712] border ${errors.name ? 'border-red-500' : 'border-slate-800'} rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors`}
                 />
                 {errors.name && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-sm mt-1 ml-2">{errors.name}</motion.span>}
               </div>
-              
+
               <div>
-                <input 
-                  type="email" 
-                  placeholder="Your Email" 
+                <input
+                  type="email"
+                  placeholder="Your Email"
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className={`w-full bg-[#030712] border ${errors.email ? 'border-red-500' : 'border-slate-800'} rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors`}
                 />
                 {errors.email && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-sm mt-1 ml-2">{errors.email}</motion.span>}
               </div>
 
               <div>
-                <textarea 
-                  placeholder="Your Message" 
-                  rows={4} 
+                <textarea
+                  placeholder="Your Message"
+                  rows={4}
                   value={formData.message}
-                  onChange={(e) => setFormData({...formData, message: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   className={`w-full bg-[#030712] border ${errors.message ? 'border-red-500' : 'border-slate-800'} rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors resize-none`}
                 />
                 {errors.message && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-sm mt-1 ml-2">{errors.message}</motion.span>}
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={status === 'submitting'}
                 className="group bg-blue-600 hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl font-medium transition-colors mt-2 flex items-center justify-center gap-2"
               >
-                {status === 'submitting' ? 'Sending...' : 'Send Message'} 
+                {status === 'submitting' ? 'Sending...' : 'Send Message'}
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </form>
@@ -227,22 +227,22 @@ export function Contact() {
       </div>
 
       {/* Styled Map Area */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
         className="w-full aspect-[21/9] md:aspect-[21/7] rounded-2xl overflow-hidden border border-slate-800 bg-[#0b1120] relative group"
       >
-        <img 
-          src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80" 
-          alt="Location Map" 
-          className="w-full h-full object-cover opacity-30 grayscale group-hover:grayscale-0 group-hover:opacity-50 transition-all duration-1000 ease-out group-hover:scale-105" 
+        <img
+          src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80"
+          alt="Location Map"
+          className="w-full h-full object-cover opacity-30 grayscale group-hover:grayscale-0 group-hover:opacity-50 transition-all duration-1000 ease-out group-hover:scale-105"
         />
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-           <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center animate-pulse">
-              <div className="w-4 h-4 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.8)]" />
-           </div>
+          <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-4 h-4 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.8)]" />
+          </div>
         </div>
       </motion.div>
     </section>
