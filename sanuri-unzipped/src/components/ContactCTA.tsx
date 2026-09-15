@@ -82,18 +82,28 @@ export function Contact() {
     return isValid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
       setStatus('submitting');
-      // Simulate API call
-      setTimeout(() => {
-        setStatus('success');
-        setFormData({ name: '', email: '', message: '' });
-        
-        // Reset success message after 5 seconds
-        setTimeout(() => setStatus('idle'), 5000);
-      }, 1500);
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        if (response.ok) {
+          setStatus('success');
+          setFormData({ name: '', email: '', message: '' });
+          setTimeout(() => setStatus('idle'), 5000);
+        } else {
+          setStatus('idle');
+          alert('Failed to send message.');
+        }
+      } catch (err) {
+        setStatus('idle');
+        alert('An error occurred.');
+      }
     }
   };
 

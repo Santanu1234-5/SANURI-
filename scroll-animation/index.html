@@ -236,13 +236,13 @@
                         <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[50px] pointer-events-none"></div>
                         <form id="contact-form" class="flex flex-col gap-5 relative z-10" onsubmit="handleFormSubmit(event)">
                             <div>
-                                <input type="text" placeholder="Your Name" required class="w-full bg-[#030712] border border-slate-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors" />
+                                <input type="text" name="name" placeholder="Your Name" required class="w-full bg-[#030712] border border-slate-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors" />
                             </div>
                             <div>
-                                <input type="email" placeholder="Your Email" required class="w-full bg-[#030712] border border-slate-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors" />
+                                <input type="email" name="email" placeholder="Your Email" required class="w-full bg-[#030712] border border-slate-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors" />
                             </div>
                             <div>
-                                <textarea placeholder="Your Message" rows="4" required class="w-full bg-[#030712] border border-slate-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors resize-none"></textarea>
+                                <textarea name="message" placeholder="Your Message" rows="4" required class="w-full bg-[#030712] border border-slate-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors resize-none"></textarea>
                             </div>
                             <button type="submit" class="group bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-xl font-medium transition-colors mt-2 flex items-center justify-center gap-2">
                                 Send Message 
@@ -398,10 +398,43 @@
             document.getElementById(id).classList.remove('active');
         }
 
-        function handleFormSubmit(e) {
+        async function handleFormSubmit(e) {
             e.preventDefault();
-            alert("Message Sent! Thank you.");
-            e.target.reset();
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = 'Sending...';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(form);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                message: formData.get('message')
+            };
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert("Message Sent! Thank you.");
+                    form.reset();
+                } else {
+                    alert("Failed to send: " + (result.error || "Unknown error"));
+                }
+            } catch (error) {
+                alert("An error occurred while sending the message.");
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
         }
         
         // Simple Intersection Observer for Fade-In
