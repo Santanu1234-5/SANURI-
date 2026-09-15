@@ -51,9 +51,12 @@
                     <button onclick="scrollToId('contact')" class="hover:text-white transition-colors">Contact</button>
                 </div>
                 
-                <button onclick="scrollToId('cta')" class="hidden md:block bg-white text-black px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors">
-                    Get Started
-                </button>
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="login.html" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Sign In</a>
+                    <button onclick="scrollToId('cta')" class="bg-white text-black px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors">
+                        Get Started
+                    </button>
+                </div>
 
                 <button class="md:hidden text-slate-300 hover:text-white" onclick="toggleMobileMenu()">
                     <i data-lucide="menu" id="menu-icon" width="24" height="24"></i>
