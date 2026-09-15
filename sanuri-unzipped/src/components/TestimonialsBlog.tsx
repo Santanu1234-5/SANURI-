@@ -7,7 +7,7 @@ export function Testimonials() {
   const testimonials = [
     { 
       quote: "Working with SANURI was an amazing experience. They understood our vision perfectly and delivered a product far beyond our expectations. Santanu's attention to detail is unmatched.",
-      name: "Rimi Das",
+      name: "Rimi Bag",
       role: "Startup Founder",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80"
     },
