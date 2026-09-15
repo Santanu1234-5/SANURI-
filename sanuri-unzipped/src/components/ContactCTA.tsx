@@ -1,5 +1,5 @@
 import { Mail, Phone, MapPin, ArrowRight, CheckCircle2 } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { scrollTo } from './Navigation';
 import { motion } from 'motion/react';
 
