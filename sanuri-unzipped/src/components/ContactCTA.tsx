@@ -92,17 +92,25 @@ export function Contact() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
         });
+        let result: any = {};
+        try {
+          result = await response.json();
+        } catch (e) {
+          console.warn("Response is not JSON");
+        }
+
         if (response.ok) {
           setStatus('success');
           setFormData({ name: '', email: '', message: '' });
           setTimeout(() => setStatus('idle'), 5000);
         } else {
           setStatus('idle');
-          alert('Failed to send message.');
+          alert('Failed to send message: ' + (result.error || "Server returned status " + response.status));
         }
-      } catch (err) {
+      } catch (err: any) {
         setStatus('idle');
-        alert('An error occurred.');
+        alert('An error occurred: ' + (err.message || err));
+        console.error(err);
       }
     }
   };
