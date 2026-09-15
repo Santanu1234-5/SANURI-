@@ -31,7 +31,7 @@ async function startServer() {
           { role: 'user', parts: [{ text: message }] }
         ],
         config: {
-          systemInstruction: "You are the SANURI Nexus AI assistant. You help users navigate the platform, solve problems related to sustainability, and guide them in creating impactful plans. Keep your answers concise, friendly, and helpful. You are a small widget on the screen, so keep responses short.",
+          systemInstruction: "You are the SANURI Nexus AI assistant. You help users navigate the platform, solve problems related to sustainability, and guide them in creating impactful plans. Keep your answers concise, friendly, and helpful. If the user describes a complex real-world problem (e.g. traffic, waste, education), you MUST include the exact phrase '[OFFER_NEXUS]' anywhere in your response to offer them the full Nexus Analysis.",
         }
       });
       
@@ -55,44 +55,39 @@ async function startServer() {
       const ai = new GoogleGenAI({ apiKey });
       
       const prompt = `
-        You are an expert sustainability and problem-solving AI for the SANURI platform.
+        You are SANURI NEXUS AI, an AI-powered problem-solving engine.
         The user has submitted the following problem: "${problem}"
         
-        Analyze this problem and provide a structured plan to solve it.
+        Analyze ONLY the user's submitted input.
+        Do not assume that the problem is about a particular industry, college, environment, technology, or topic unless the user says so.
+        Identify the problem, summarize it, determine plausible root causes, affected areas, potential impact, possible solutions, recommended solution, implementation steps, required resources, expected outcomes, risks, and next steps.
+        Your recommendations must be practical, relevant to the user's specific input, and clearly explained.
+        Do not invent facts about the user's location, organization, budget, statistics, or circumstances.
+        If important information is missing, explicitly state the assumption or ask a useful follow-up question.
+        
         You MUST respond ONLY with a valid JSON object. Do not include markdown formatting like \`\`\`json.
         
         Use this exact JSON structure:
         {
-          "analysis": {
-            "title": "String (e.g. Environmental Impact or Efficiency Loss)",
-            "description": "String (1-2 sentences summarizing the core issue)",
-            "severity": "String (Low, Medium, or High)",
-            "primaryMetricLabel": "String (e.g. Est. Waste, Time Lost)",
-            "primaryMetricValue": "String (e.g. 72%, 40 hrs)",
-            "secondaryMetricLabel": "String (e.g. Potential Saving, Cost Impact)",
-            "secondaryMetricValue": "String (e.g. ₹18,400, High)"
-          },
-          "rootCauses": [
-            "String (cause 1)",
-            "String (cause 2)",
-            "String (cause 3)"
-          ],
-          "solutions": [
-            { "title": "String", "description": "String" },
+          "problem": "String (Clearly explain what problem the user appears to be describing)",
+          "summary": "String (Short explanation of the problem in simple language)",
+          "root_causes": ["String", "String"],
+          "affected_areas": ["String", "String"],
+          "potential_impact": ["String", "String"],
+          "possible_solutions": [
             { "title": "String", "description": "String" },
             { "title": "String", "description": "String" }
           ],
-          "roadmap": [
-            { "title": "Plan", "timeframe": "(Week 1-2)", "description": "String" },
-            { "title": "Implement", "timeframe": "(Week 3-6)", "description": "String" },
-            { "title": "Monitor", "timeframe": "(Week 7-8)", "description": "String" },
-            { "title": "Impact", "timeframe": "(Week 9+)", "description": "String" }
+          "recommended_solution": "String (Choose the strongest practical approach and explain why)",
+          "action_plan": [
+            { "step": "01", "action": "String" },
+            { "step": "02", "action": "String" },
+            { "step": "03", "action": "String" }
           ],
-          "impact": {
-            "metric1": { "value": "String (e.g. 72%)", "label": "String" },
-            "metric2": { "value": "String (e.g. ₹18,400)", "label": "String" },
-            "metric3": { "value": "String (e.g. 2.5 tons)", "label": "String" }
-          }
+          "resources_required": ["String", "String"],
+          "expected_outcome": ["String", "String"],
+          "risks": ["String", "String"],
+          "next_step": "String (One clear action they can take next)"
         }
       `;
 
@@ -102,13 +97,47 @@ async function startServer() {
       });
       
       let responseText = response.text || "{}";
-      // Clean up markdown if the model hallucinates it
       responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
       
       res.json(JSON.parse(responseText));
     } catch (error: any) {
       console.error("Nexus API Error:", error);
       res.status(500).json({ error: error.message || "Failed to analyze problem. Please try again later." });
+    }
+  });
+
+  // Nexus AI Refine Endpoint (Follow-up chat)
+  app.post('/api/nexus/refine', async (req, res) => {
+    try {
+      const { problem, analysisData, question } = req.body;
+      
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        return res.status(500).json({ error: "Gemini API key is missing." });
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+      
+      const prompt = `
+        You are SANURI NEXUS AI. You previously analyzed this problem: "${problem}"
+        
+        Your previous analysis was:
+        ${JSON.stringify(analysisData)}
+        
+        The user has a follow-up question or request: "${question}"
+        
+        Answer the user's question directly based on the context of your previous analysis. Be concise, practical, and helpful. Do not return JSON, just return a conversational markdown text response.
+      `;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-lite',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }]
+      });
+      
+      res.json({ text: response.text });
+    } catch (error: any) {
+      console.error("Nexus Refine API Error:", error);
+      res.status(500).json({ error: error.message || "Failed to generate response." });
     }
   });
 

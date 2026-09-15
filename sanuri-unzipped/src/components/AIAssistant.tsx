@@ -4,9 +4,10 @@ import { Bot, X, Send, Minimize2, Maximize2, Loader2 } from 'lucide-react';
 interface Message {
   role: 'user' | 'model';
   parts: { text: string }[];
+  offerNexus?: boolean;
 }
 
-export function AIAssistant() {
+export function AIAssistant({ onNavigate }: { onNavigate?: (view: any) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -54,7 +55,13 @@ export function AIAssistant() {
       const data = await response.json();
       
       if (response.ok) {
-        setMessages(prev => [...prev, { role: 'model', parts: [{ text: data.text }] }]);
+        let text = data.text;
+        let offerNexus = false;
+        if (text.includes('[OFFER_NEXUS]')) {
+          offerNexus = true;
+          text = text.replace(/\[OFFER_NEXUS\]/g, '').trim();
+        }
+        setMessages(prev => [...prev, { role: 'model', parts: [{ text }], offerNexus }]);
       } else {
         setMessages(prev => [...prev, { role: 'model', parts: [{ text: data.error || 'Sorry, something went wrong.' }] }]);
       }
@@ -119,6 +126,20 @@ export function AIAssistant() {
                       : 'bg-slate-800 text-slate-200 rounded-bl-sm border border-slate-700'
                   }`}>
                     {msg.parts[0].text}
+                    {msg.offerNexus && onNavigate && (
+                      <div className="mt-3 border-t border-slate-700 pt-3">
+                        <p className="text-xs text-slate-400 mb-2">This sounds like a complex problem. Let Nexus analyze it in depth.</p>
+                        <button 
+                          onClick={() => {
+                            setIsOpen(false);
+                            onNavigate('nexus-input');
+                          }}
+                          className="w-full bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 border border-indigo-500/30 rounded-lg py-1.5 text-xs font-bold transition-colors flex items-center justify-center gap-2"
+                        >
+                          Analyze with NEXUS →
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

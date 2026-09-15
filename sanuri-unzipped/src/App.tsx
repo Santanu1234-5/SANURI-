@@ -7,7 +7,7 @@ import { ProfileView } from './views/ProfileView';
 import { AIAssistant } from './components/AIAssistant';
 import { ScrollAnimation } from './components/ScrollAnimation';
 
-export type AppView = 'home' | 'login' | 'register' | 'forgot-password' | 'reset-password' | 'dashboard' | 'nexus-input' | 'nexus-analysis' | 'nexus-solutions' | 'nexus-roadmap' | 'profile';
+export type AppView = 'home' | 'login' | 'register' | 'forgot-password' | 'reset-password' | 'dashboard' | 'nexus-input' | 'nexus-result' | 'profile';
 
 export interface UserProfile {
   fullName: string;
@@ -29,7 +29,7 @@ export default function App() {
   };
 
   const renderView = () => {
-    const requiresAuth = ['dashboard', 'nexus-input', 'nexus-analysis', 'nexus-solutions', 'nexus-roadmap', 'profile'];
+    const requiresAuth = ['dashboard', 'nexus-input', 'nexus-result', 'profile'];
     const actualView = (requiresAuth.includes(currentView) && !user) ? 'login' : currentView;
 
     switch(actualView) {
@@ -41,9 +41,7 @@ export default function App() {
         return <AuthView view={actualView} onNavigate={setCurrentView} onLogin={handleLogin} />;
       case 'dashboard': return <DashboardView onNavigate={setCurrentView} user={user!} onLogout={handleLogout} />;
       case 'nexus-input':
-      case 'nexus-analysis':
-      case 'nexus-solutions':
-      case 'nexus-roadmap':
+      case 'nexus-result':
         return <NexusAIView view={actualView} onNavigate={setCurrentView} onLogout={handleLogout} />;
       case 'profile': return <ProfileView onNavigate={setCurrentView} user={user!} onLogout={handleLogout} />;
       default: return <HomeView onNavigate={setCurrentView} />;
@@ -55,7 +53,7 @@ export default function App() {
       <ScrollAnimation />
       <div className="relative z-10 bg-[#05050A]/70 min-h-screen">
         {renderView()}
-        <AIAssistant />
+        <AIAssistant onNavigate={setCurrentView} />
       </div>
     </div>
   );
